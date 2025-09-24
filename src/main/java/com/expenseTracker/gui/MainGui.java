@@ -3,6 +3,13 @@ package com.expenseTracker.gui;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
+import com.expenseTracker.dao.ExpenseDAO;
+import com.expenseTracker.model.*;
+
+import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
+
 
 import java.awt.*;
 
@@ -69,11 +76,14 @@ class CategoryGui extends JFrame {
     private JButton updateButton;
     private JTable categoryTable;
     private DefaultTableModel tableModel;
+    private ExpenseDAO expenseDao;
 
     public CategoryGui(){
         initializeComponents();
         setupLayout();
         setupEventListeners();
+        expenseDao = new ExpenseDAO();
+        loadCategory();
 
     }
 
@@ -139,6 +149,28 @@ class CategoryGui extends JFrame {
     public void setupEventListeners(){
 
     }
+
+    private void updateTable(List<Category> category){
+        tableModel.setRowCount(0);
+        for(Category cate: category){
+            Object row[] = {
+                cate.getId(),
+                cate.getName()
+            };
+            tableModel.addRow(row);
+        }
+    }
+
+    private void loadCategory(){
+        try{
+            List<Category> categories = expenseDao.getAllCategories();
+            updateTable(categories);
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(this,"Database Error: "+e.getMessage(),"DataBase Error",JOptionPane.ERROR_MESSAGE);
+        }
+    }    
+
 }
 
 
@@ -151,13 +183,16 @@ class ExpenseGui extends JFrame {
     private JButton updateButton;
     private JComboBox<String> categoryComboBox;
 
-    private JTable categoryTable;
+    private JTable expenseTable;
     private DefaultTableModel tableModel;
+    private ExpenseDAO expenseDao;
 
     public ExpenseGui(){
+        expenseDao = new ExpenseDAO();
         initializeComponents();
         setupLayout();
         setupEventListeners();
+        loadExpense();
 
     }
 
@@ -173,7 +208,7 @@ class ExpenseGui extends JFrame {
 
         categoryComboBox = new JComboBox<>(categories);
 
-        String[] columnNames = {"Id","Amount","Category","Created At"};
+        String[] columnNames = {"Id","Amount","Description","Category","Created At"};
 
         tableModel = new DefaultTableModel(columnNames,0){
             @Override
@@ -182,7 +217,7 @@ class ExpenseGui extends JFrame {
             }
         };
 
-        categoryTable = new JTable(tableModel);
+        expenseTable = new JTable(tableModel);
 
     }
 
@@ -226,13 +261,37 @@ class ExpenseGui extends JFrame {
 
         
         add(northPanel,BorderLayout.NORTH);
-        add(new JScrollPane(categoryTable),BorderLayout.CENTER);
+        add(new JScrollPane(expenseTable),BorderLayout.CENTER);
 
 
     }
 
     public void setupEventListeners(){
 
+    }
+
+    private void updateTable(List<Expense> expense){
+        tableModel.setRowCount(0);
+        for(Expense exp: expense){
+            Object row[] = {
+                exp.getExpId(),
+                exp.getAmount(),
+                exp.getDescription(),
+                exp.getCategory(),
+                exp.getCreatedAt()
+            };
+            tableModel.addRow(row);
+        }
+    }
+
+    private void loadExpense(){
+        try{
+            List<Expense> expense = expenseDao.getAllExpenses();
+            updateTable(expense);
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(this,"Database Error: "+e.getMessage(),"DataBase Error",JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     

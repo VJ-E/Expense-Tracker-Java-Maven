@@ -5,7 +5,7 @@ import java.sql.*;
 
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:mysql://localhost:3360/expense_tracker";
+    private static final String URL = "jdbc:mysql://localhost:3306/expense_tracker";
     private static final String USERNAME = "root";
     private static final String PASSWORD  = Dotenv.load().get("DB_PASSWORD");
 
