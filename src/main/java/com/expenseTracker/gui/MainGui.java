@@ -102,8 +102,16 @@ class CategoryGui extends JFrame {
                 return false;
             }
         };
-
         categoryTable = new JTable(tableModel);
+
+        categoryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        categoryTable.getSelectionModel().addListSelectionListener( 
+            e->{
+            if(!e.getValueIsAdjusting()){
+                loadSelectedCategory();
+            }
+        });
+
 
     }
 
@@ -200,6 +208,30 @@ class CategoryGui extends JFrame {
     }
 
     private void updateCategory(){
+        int row = categoryTable.getSelectedRow();
+        if(row == -1){
+            JOptionPane.showMessageDialog(this,"Select a Category to update..","Invalid Update",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int id = (int)categoryTable.getValueAt(row,0);
+        String categoryName = titleField.getText();
+
+        if(categoryName == ""){
+            JOptionPane.showMessageDialog(this,"Category name is emty!","Invaild Category Name",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try{
+            if(expenseDao.updateCategory(id,categoryName) > 0){
+                JOptionPane.showMessageDialog(this,"Category updated Successfully","Update Success",JOptionPane.INFORMATION_MESSAGE);
+                loadCategory();
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Category Update Failed","Update Failed",JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(this,"Databse Failed while Updating - "+e.getMessage(),"Databse failed",JOptionPane.ERROR_MESSAGE);
+        }
 
     }
 
@@ -209,6 +241,14 @@ class CategoryGui extends JFrame {
 
     private void refreshCategory(){
 
+    }
+
+    private void loadSelectedCategory(){
+        int row = categoryTable.getSelectedRow();
+        if(row != -1){
+            String categoryName =  categoryTable.getValueAt(row, 1).toString();
+            titleField.setText(categoryName);
+        }
     }
 
 }
@@ -269,8 +309,16 @@ class ExpenseGui extends JFrame {
                 return false;
             }
         };
-
         expenseTable = new JTable(tableModel);
+
+        expenseTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        expenseTable.getSelectionModel().addListSelectionListener( 
+            e->{
+            if(!e.getValueIsAdjusting()){
+                loadSelectedExpense();
+            }
+        });
+
 
     }
 
@@ -405,7 +453,40 @@ class ExpenseGui extends JFrame {
     }
 
     private void updateExpense(){
-
+        int row = expenseTable.getSelectedRow();
+        if(row == -1){
+            JOptionPane.showMessageDialog(this,"Select a Category to update..","Invalid Update",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int id = (int)expenseTable.getValueAt(row,0);
+        String amount = amountField.getText();
+        String description = descriptoinArea.getText();
+        String category = categoryComboBox.getSelectedItem().toString();
+        int amt = 0;
+    
+        if(amount == ""){
+            JOptionPane.showMessageDialog(this,"Expense Amount is emty!","Invaild Category Name",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try{
+            amt = Integer.parseInt(amount);
+        }
+        catch(NumberFormatException e){
+            JOptionPane.showMessageDialog(this,"Enter a Number in Amount","Invaild Input",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try{
+            if(expenseDao.updateExpense(id,amt, description, category) > 0){
+                JOptionPane.showMessageDialog(this,"Expense updated Successfully","Update Success",JOptionPane.INFORMATION_MESSAGE);
+                loadExpense();
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Expense Update Failed","Update Failed",JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(this,"Databse Failed while Updating - "+e.getMessage(),"Databse failed",JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void deleteExpense(){
@@ -415,5 +496,19 @@ class ExpenseGui extends JFrame {
     private void refreshExpense(){
 
     }
+
+    private void loadSelectedExpense(){
+        int row = expenseTable.getSelectedRow();
+        if(row != -1){
+            String amount = expenseTable.getValueAt(row,1).toString();
+            String description = expenseTable.getValueAt(row, 2).toString();
+            String category = expenseTable.getValueAt(row, 3).toString();
+
+            amountField.setText(amount);
+            descriptoinArea.setText(description);
+            categoryComboBox.setSelectedItem(category);
+        }
+    }
     
+
 }
