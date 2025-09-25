@@ -5,8 +5,6 @@ import com.expenseTracker.model.*;
 
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import java.util.ArrayList;
 
 import java.time.LocalDateTime;
@@ -18,6 +16,7 @@ public class ExpenseDAO {
     private static final String SELECT_ALL_EXPENSE = "SELECT * FROM Expense ORDER BY created_at DESC";
     private static final String INSERT_EXPENSE = "INSERT INTO Expense(amount, description, created_at, cate_id) VALUES(?,?,?,?)";
     private static final String UPDATE_EXPENSE = "UPDATE Expense SET amount = ? , description = ?, cate_id = ? WHERE exp_id = ?";
+    private static final String DELETE_EXPENSE = "DELETE FROM Expense WHERE exp_id = ?";
     
     private static final String SELECT_CATEGORY_ID = "SELECT id FROM Category WHERE name = ?";
     private static final String SELECT_CATEGORY_NAME = "SELECT name FROM Category WHERE id = ?";
@@ -25,6 +24,7 @@ public class ExpenseDAO {
     private static final String SELECT_ALL_CATEGORIES = "SELECT * FROM Category";
     private static final String INSERT_CATEGORY = "INSERT INTO Category(name) VALUES(?)";
     private static final String UPDATE_CATEGORY = "UPDATE Category SET name = ? WHERE id = ?";
+    private static final String DELETE_CATEGORY = "DELETE FROM Category WHERE id = ?";
 
     public String getCategoryName(int cate_id) throws SQLException{
         String category = "";
@@ -127,6 +127,17 @@ public class ExpenseDAO {
 
     }
 
+    public int deleteExpense(int id) throws SQLException{
+        try(
+            Connection conn = DatabaseConnection.getDBConnection();
+            PreparedStatement stmt = conn.prepareStatement(DELETE_EXPENSE);
+        )
+        {
+            stmt.setInt(1,id);
+            return stmt.executeUpdate();
+        }
+    }
+
     //------------------------------------------------------------------------------
 
 
@@ -170,5 +181,15 @@ public class ExpenseDAO {
         }
     }
 
+    public int deleteCategory(int id) throws SQLException{
+        try(
+            Connection conn = DatabaseConnection.getDBConnection();
+            PreparedStatement stmt = conn.prepareStatement(DELETE_CATEGORY);
+        )
+        {
+            stmt.setInt(1,id);
+            return stmt.executeUpdate();
+        }
+    }
 
 }

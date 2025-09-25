@@ -91,7 +91,7 @@ class CategoryGui extends JFrame {
 
         titleField = new JTextField(20);
         addButton = new JButton("Add");
-        refreshButton = new JButton("Remove");
+        refreshButton = new JButton("Refresh");
         deleteButton = new JButton("Delete");
         updateButton = new JButton("Update");
         String[] columnNames = {"Id","Title"};
@@ -201,6 +201,7 @@ class CategoryGui extends JFrame {
                 JOptionPane.showMessageDialog(this,"Failed to add category", "Failed",JOptionPane.ERROR_MESSAGE);
             }
             loadCategory();
+            clearTable();
         }
         catch(SQLException e){
             JOptionPane.showMessageDialog(this, "Database Failed","Database Error",JOptionPane.ERROR_MESSAGE);
@@ -224,6 +225,7 @@ class CategoryGui extends JFrame {
             if(expenseDao.updateCategory(id,categoryName) > 0){
                 JOptionPane.showMessageDialog(this,"Category updated Successfully","Update Success",JOptionPane.INFORMATION_MESSAGE);
                 loadCategory();
+                clearTable();
             }
             else{
                 JOptionPane.showMessageDialog(this, "Category Update Failed","Update Failed",JOptionPane.ERROR_MESSAGE);
@@ -236,11 +238,30 @@ class CategoryGui extends JFrame {
     }
 
     private void deleteCategory(){
-
+        int row = categoryTable.getSelectedRow();
+        if(row == -1){
+            JOptionPane.showMessageDialog(this,"Select a Category to update..","Invalid Update",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int id = (int)categoryTable.getValueAt(row,0);
+        try{
+            if(expenseDao.deleteCategory(id) > 0){
+                JOptionPane.showMessageDialog(this,"Category deleted Successfully","Delete Success",JOptionPane.INFORMATION_MESSAGE);
+                loadCategory();
+                clearTable();
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Category Delete Failed","Delete Failed",JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(this,"Databse Failed while deleting - "+e.getMessage(),"Databse failed",JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void refreshCategory(){
-
+        loadCategory();
+        clearTable();
     }
 
     private void loadSelectedCategory(){
@@ -249,6 +270,10 @@ class CategoryGui extends JFrame {
             String categoryName =  categoryTable.getValueAt(row, 1).toString();
             titleField.setText(categoryName);
         }
+    }
+
+    private  void clearTable(){
+        titleField.setText("");
     }
 
 }
@@ -444,6 +469,7 @@ class ExpenseGui extends JFrame {
                 JOptionPane.showMessageDialog(this,"Failed to add expense", "Failed",JOptionPane.ERROR_MESSAGE);
             }
             loadExpense();
+            clearTable();
         }
         catch(SQLException e){
             JOptionPane.showMessageDialog(this, "Database Failed "+e.getMessage(),"Database Error",JOptionPane.ERROR_MESSAGE);
@@ -479,6 +505,7 @@ class ExpenseGui extends JFrame {
             if(expenseDao.updateExpense(id,amt, description, category) > 0){
                 JOptionPane.showMessageDialog(this,"Expense updated Successfully","Update Success",JOptionPane.INFORMATION_MESSAGE);
                 loadExpense();
+                clearTable();
             }
             else{
                 JOptionPane.showMessageDialog(this, "Expense Update Failed","Update Failed",JOptionPane.ERROR_MESSAGE);
@@ -490,11 +517,31 @@ class ExpenseGui extends JFrame {
     }
 
     private void deleteExpense(){
+        int row = expenseTable.getSelectedRow();
+        if(row == -1){
+            JOptionPane.showMessageDialog(this,"Select a Expense to update..","Invalid Update",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int id = (int)expenseTable.getValueAt(row,0);
+        try{
+            if(expenseDao.deleteExpense(id) > 0){
+                JOptionPane.showMessageDialog(this,"Expense deleted Successfully","Delete Success",JOptionPane.INFORMATION_MESSAGE);
+                loadExpense();
+                clearTable();
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Expense Delete Failed","Delete Failed",JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(this,"Databse Failed while deleting - "+e.getMessage(),"Databse failed",JOptionPane.ERROR_MESSAGE);
+        }
 
     }
 
     private void refreshExpense(){
-
+        loadExpense();
+        clearTable();
     }
 
     private void loadSelectedExpense(){
@@ -510,5 +557,9 @@ class ExpenseGui extends JFrame {
         }
     }
     
+    private void clearTable(){
+        amountField.setText("");
+        descriptoinArea.setText("");
+    }
 
 }
