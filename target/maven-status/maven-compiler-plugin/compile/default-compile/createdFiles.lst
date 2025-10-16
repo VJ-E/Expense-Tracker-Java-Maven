@@ -1,3 +1,4 @@
+com/expenseTracker/dao/ExpenseDAO.class
 com/expenseTracker/model/Category.class
 com/expenseTracker/gui/MainGui.class
 com/expenseTracker/util/DatabaseConnection.class
