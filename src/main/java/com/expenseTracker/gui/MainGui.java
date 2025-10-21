@@ -71,7 +71,7 @@ class CategoryGui extends JFrame {
 
     private JTextField titleField;
     private JButton addButton;
-    private JButton removeButton;
+    private JButton refreshButton;
     private JButton deleteButton;
     private JButton updateButton;
     private JTable categoryTable;
@@ -91,7 +91,7 @@ class CategoryGui extends JFrame {
 
         titleField = new JTextField(20);
         addButton = new JButton("Add");
-        removeButton = new JButton("Remove");
+        refreshButton = new JButton("Remove");
         deleteButton = new JButton("Delete");
         updateButton = new JButton("Update");
         String[] columnNames = {"Id","Title"};
@@ -135,9 +135,9 @@ class CategoryGui extends JFrame {
         JPanel buttonsPanel = new JPanel(new FlowLayout());
 
         buttonsPanel.add(addButton);
-        buttonsPanel.add(removeButton);
         buttonsPanel.add(deleteButton);
         buttonsPanel.add(updateButton);
+        buttonsPanel.add(refreshButton);
 
         northPanel.add(inputPanel,BorderLayout.NORTH);
         northPanel.add(buttonsPanel,BorderLayout.CENTER);
@@ -147,7 +147,18 @@ class CategoryGui extends JFrame {
     }
 
     public void setupEventListeners(){
-
+        addButton.addActionListener((e)->{
+            addCategory();
+        });
+        updateButton.addActionListener((e)->{
+            updateCategory();
+        });
+        deleteButton.addActionListener((e)->{
+            deleteCategory();
+        });
+        refreshButton.addActionListener((e)->{
+            refreshCategory();
+        });
     }
 
     private void updateTable(List<Category> category){
@@ -171,14 +182,44 @@ class CategoryGui extends JFrame {
         }
     }    
 
+    private void addCategory(){
+        String name = titleField.getText().trim();
+        try{
+            int rowsAffected = expenseDao.createCategory(name);
+            if(rowsAffected > 0){
+                JOptionPane.showMessageDialog(this,"Category Added Successfully", "Success",JOptionPane.INFORMATION_MESSAGE);
+            }
+            else{
+                JOptionPane.showMessageDialog(this,"Failed to add category", "Failed",JOptionPane.ERROR_MESSAGE);
+            }
+            loadCategory();
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(this, "Database Failed","Database Error",JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void updateCategory(){
+
+    }
+
+    private void deleteCategory(){
+
+    }
+
+    private void refreshCategory(){
+
+    }
+
 }
 
 
 class ExpenseGui extends JFrame {
 
-    private JTextField titleField;
+    private JTextField amountField;
+    private JTextArea descriptoinArea;
     private JButton addButton;
-    private JButton removeButton;
+    private JButton refreshButton;
     private JButton deleteButton;
     private JButton updateButton;
     private JComboBox<String> categoryComboBox;
@@ -198,15 +239,27 @@ class ExpenseGui extends JFrame {
 
     public void initializeComponents(){
 
-        titleField = new JTextField(20);
+        amountField = new JTextField(20);
+        descriptoinArea = new JTextArea(5,20);
         addButton = new JButton("Add");
-        removeButton = new JButton("Remove");
+        refreshButton = new JButton("Refresh");
         deleteButton = new JButton("Delete");
         updateButton = new JButton("Update");
-        String[] categories = {"House","Petrol"};
-        // String[] categories = getCategories();
+        List<String> categories = new ArrayList<>(); 
+            try{
+            List<Category> cate = expenseDao.getAllCategories();
+            for(Category c: cate){
+                categories.add(c.getName());
+            }
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(this,"Databse Failed : "+e.getMessage(),"Database Error",JOptionPane.ERROR_MESSAGE);
+        }
 
-        categoryComboBox = new JComboBox<>(categories);
+        String[] categoriesArray = categories.toArray(new String[0]);
+
+
+        categoryComboBox = new JComboBox<>(categoriesArray);
 
         String[] columnNames = {"Id","Amount","Description","Category","Created At"};
 
@@ -233,7 +286,6 @@ class ExpenseGui extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5,5,5,5);
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -242,22 +294,35 @@ class ExpenseGui extends JFrame {
 
         gbc.gridx = 1;
         gbc.gridy = 0;
-        inputPanel.add(titleField,gbc);     
+        inputPanel.add(amountField,gbc);     
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        inputPanel.add(new JLabel("Description"),gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 1;
+        inputPanel.add(descriptoinArea);
+
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        inputPanel.add(new JLabel("Category"),gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 2;
         inputPanel.add(categoryComboBox,gbc);
 
 
         JPanel buttonsPanel = new JPanel(new FlowLayout());
 
         buttonsPanel.add(addButton);
-        buttonsPanel.add(removeButton);
         buttonsPanel.add(deleteButton);
         buttonsPanel.add(updateButton);
+        buttonsPanel.add(refreshButton);
 
-        northPanel.add(inputPanel,BorderLayout.NORTH);
-        northPanel.add(buttonsPanel,BorderLayout.CENTER);
+        northPanel.add(inputPanel,BorderLayout.CENTER);
+        northPanel.add(buttonsPanel,BorderLayout.SOUTH);
 
         
         add(northPanel,BorderLayout.NORTH);
@@ -267,7 +332,18 @@ class ExpenseGui extends JFrame {
     }
 
     public void setupEventListeners(){
-
+        addButton.addActionListener((e)->{
+            addExpense();
+        });
+        updateButton.addActionListener((e)->{
+            updateExpense();
+        });
+        deleteButton.addActionListener((e)->{
+            deleteExpense();
+        });
+        refreshButton.addActionListener((e)->{
+            refreshExpense();
+        });
     }
 
     private void updateTable(List<Expense> expense){
@@ -294,5 +370,50 @@ class ExpenseGui extends JFrame {
         }
     }
 
+    private void addExpense(){
+        String amount = amountField.getText();
+        String category = (categoryComboBox.getSelectedItem().toString()).trim();
+        String description = descriptoinArea.getText().trim();
+        int amt = 0;
+
+        if(amount.equals("")){
+            JOptionPane.showMessageDialog(this, "Enter a Amount","Invaild field",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try{
+            amt = Integer.parseInt(amount);
+        }
+        catch(NumberFormatException e){
+            JOptionPane.showMessageDialog(this,"Enter a Number in Amount","Invaild Input",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try{
+            if(expenseDao.createExpense(amt,category,description)>0){
+                JOptionPane.showMessageDialog(this,"Expense Added Successfully", "Success",JOptionPane.INFORMATION_MESSAGE);
+            }
+            else{
+                JOptionPane.showMessageDialog(this,"Failed to add expense", "Failed",JOptionPane.ERROR_MESSAGE);
+            }
+            loadExpense();
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(this, "Database Failed "+e.getMessage(),"Database Error",JOptionPane.ERROR_MESSAGE);
+        }
+        
+
+    }
+
+    private void updateExpense(){
+
+    }
+
+    private void deleteExpense(){
+
+    }
+
+    private void refreshExpense(){
+
+    }
     
 }

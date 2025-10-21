@@ -4,7 +4,9 @@ import com.expenseTracker.util.*;
 import com.expenseTracker.model.*;
 
 import java.util.List;
-import java.sql.SQLException;
+
+import javax.swing.JOptionPane;
+
 import java.util.ArrayList;
 
 import java.time.LocalDateTime;
@@ -14,9 +16,13 @@ import java.sql.*;
 public class ExpenseDAO {
 
     private static final String SELECT_ALL_EXPENSE = "SELECT * FROM Expense ORDER BY created_at DESC";
+    private static final String INSERT_EXPENSE = "INSERT INTO Expense(amount, description, created_at, cate_id) VALUES(?,?,?,?)";
+    
+    private static final String SELECT_CATEGORY_ID = "SELECT id FROM Category WHERE name = ?";
     private static final String SELECT_CATEGORY_NAME = "SELECT name FROM Category WHERE id = ?";
 
     private static final String SELECT_ALL_CATEGORIES = "SELECT * FROM Category";
+    private static final String INSERT_CATEGORY = "INSERT INTO Category(name) VALUES(?)";
 
     public String getCategoryName(int cate_id) throws SQLException{
         String category = "";
@@ -66,6 +72,40 @@ public class ExpenseDAO {
         return expense;
     }
 
+    public int getCategoryId(String category) throws SQLException{
+        try(
+            Connection conn = DatabaseConnection.getDBConnection();
+            PreparedStatement stmt1 = conn.prepareStatement(SELECT_CATEGORY_ID);
+        )
+        {
+            stmt1.setString(1, category);
+            try(ResultSet res = stmt1.executeQuery()){
+                if(res.next()){
+                    return res.getInt("id");
+                }
+                else{
+                    throw new SQLException("No Such Category");
+                }
+            }
+        }
+    }
+
+    public int createExpense(int amt,String category,String description) throws SQLException{
+        try(
+            Connection conn = DatabaseConnection.getDBConnection();
+            PreparedStatement stmt = conn.prepareStatement(INSERT_EXPENSE);
+            )
+            {
+                stmt.setInt(1,amt);
+                int cateId = getCategoryId(category);
+                stmt.setString(2,description);
+                stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+                stmt.setInt(4,cateId);
+
+                return stmt.executeUpdate();
+        }
+    }
+
     //------------------------------------------------------------------------------
 
 
@@ -84,6 +124,17 @@ public class ExpenseDAO {
             }
         }
         return categories;
+    }
+
+    public int createCategory(String name) throws SQLException{
+        try(
+            Connection conn = DatabaseConnection.getDBConnection();
+            PreparedStatement stmt = conn.prepareStatement(INSERT_CATEGORY);
+        )
+        {
+            stmt.setString(1,name);
+            return stmt.executeUpdate();
+        }
     }
 
 
