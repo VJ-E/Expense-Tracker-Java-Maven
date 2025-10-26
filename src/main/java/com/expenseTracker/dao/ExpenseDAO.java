@@ -17,12 +17,14 @@ public class ExpenseDAO {
 
     private static final String SELECT_ALL_EXPENSE = "SELECT * FROM Expense ORDER BY created_at DESC";
     private static final String INSERT_EXPENSE = "INSERT INTO Expense(amount, description, created_at, cate_id) VALUES(?,?,?,?)";
+    private static final String UPDATE_EXPENSE = "UPDATE Expense SET amount = ? , description = ?, cate_id = ? WHERE exp_id = ?";
     
     private static final String SELECT_CATEGORY_ID = "SELECT id FROM Category WHERE name = ?";
     private static final String SELECT_CATEGORY_NAME = "SELECT name FROM Category WHERE id = ?";
 
     private static final String SELECT_ALL_CATEGORIES = "SELECT * FROM Category";
     private static final String INSERT_CATEGORY = "INSERT INTO Category(name) VALUES(?)";
+    private static final String UPDATE_CATEGORY = "UPDATE Category SET name = ? WHERE id = ?";
 
     public String getCategoryName(int cate_id) throws SQLException{
         String category = "";
@@ -106,6 +108,25 @@ public class ExpenseDAO {
         }
     }
 
+    public int updateExpense(int id, int amount, String description, String category) throws SQLException{
+        try(
+            Connection conn = DatabaseConnection.getDBConnection();
+            PreparedStatement stmt = conn.prepareStatement(UPDATE_EXPENSE);
+        )
+        {
+            stmt.setInt(1,amount);
+            stmt.setString(2,description);
+
+            int cateId = getCategoryId(category);
+            stmt.setInt(3,cateId);
+            stmt.setInt(4,id);
+
+            return stmt.executeUpdate();
+        }
+
+
+    }
+
     //------------------------------------------------------------------------------
 
 
@@ -137,6 +158,17 @@ public class ExpenseDAO {
         }
     }
 
+    public int updateCategory(int id,String categoryName) throws SQLException{
+        try(
+            Connection conn = DatabaseConnection.getDBConnection();
+            PreparedStatement stmt = conn.prepareStatement(UPDATE_CATEGORY);
+        )
+        {
+            stmt.setString(1,categoryName);
+            stmt.setInt(2,id);
+            return stmt.executeUpdate();
+        }
+    }
 
 
 }
