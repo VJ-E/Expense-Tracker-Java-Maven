@@ -6,24 +6,24 @@
 
 A desktop-based Expense Tracker application built with Java Swing and MySQL. This application helps users manage their expenses by category, track spending patterns, and maintain financial records in a user-friendly interface.
 
-## ✨ Features
+## Features
 
-- 💰 Add, view, update, and delete expenses
-- 🗂️ Categorize expenses for better organization
-- 📊 View expense history with detailed information
-- 📅 Track expenses by date
-- 🔍 Search and filter expenses
-- 🖥️ Intuitive graphical user interface
-- 🔒 Secure database storage
+- Add, view, update, and delete expenses
+- Categorize expenses for better organization
+- View expense history with detailed information
+- Track expenses by date
+- Search and filter expenses
+- Intuitive graphical user interface
+- Secure database storage
 
-## 🛠️ Prerequisites
+## Prerequisites
 
 - Java JDK 17 or higher
 - MySQL Server 8.0 or higher
 - Maven 3.8+
 - Git (for cloning the repository)
 
-## 🚀 Installation
+## Installation
 
 1. **Clone the repository**
    ```bash
@@ -48,7 +48,7 @@ A desktop-based Expense Tracker application built with Java Swing and MySQL. Thi
    mvn exec:java -Dexec.mainClass="com.expenseTracker.Main"
    ```
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 src/main/java/com/expenseTracker/
@@ -66,13 +66,13 @@ src/main/java/com/expenseTracker/
     └── DatabaseConnection.java # Database connection handler
 ```
 
-## 🧩 Dependencies
+## Dependencies
 
 - MySQL Connector/J - Database connectivity
 - dotenv-java - Environment variable management
 - Java Swing - GUI components
 
-## 📝 Usage
+## Usage
 
 1. **Adding an Expense**
    - Click on "Add Expense" button
@@ -88,7 +88,7 @@ src/main/java/com/expenseTracker/
    - Use the table to view all recorded expenses
    - Filter expenses by date range or category
 
-## 📊 Database Schema
+## Database Schema
 
 The application uses the following database tables:
 
@@ -101,10 +101,10 @@ The application uses the following database tables:
 - `expense_id` (PK, Auto Increment)
 - `amount` (INT)
 - `description` (TEXT)
-- `category_id` (FK to Categories)
+- `category_id` (FK to Categories AND CASDE ON DELETE)
 - `created_at` (TIMESTAMP)
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -114,11 +114,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Built with Java and MySQL
 - Uses Maven for dependency management
