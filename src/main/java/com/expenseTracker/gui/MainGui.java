@@ -129,13 +129,13 @@ class CategoryGui extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5,5,5,5);
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
+        
         gbc.gridx = 0;
         gbc.gridy = 0;
-
+        
         inputPanel.add(new JLabel("Name"),gbc);
-
+        
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 1;
         gbc.gridy = 0;
         inputPanel.add(titleField,gbc);     
@@ -355,10 +355,10 @@ class ExpenseGui extends JFrame {
 
         JPanel northPanel = new JPanel(new BorderLayout());
 
-        JPanel inputPanel = new JPanel(new GridLayout());
+        JPanel inputPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5,5,5,5);
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.anchor = GridBagConstraints.WEST;
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -367,6 +367,7 @@ class ExpenseGui extends JFrame {
 
         gbc.gridx = 1;
         gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         inputPanel.add(amountField,gbc);     
 
         gbc.gridx = 0;
@@ -375,7 +376,7 @@ class ExpenseGui extends JFrame {
 
         gbc.gridx = 1;
         gbc.gridy = 1;
-        inputPanel.add(descriptoinArea);
+        inputPanel.add(descriptoinArea,gbc);
 
 
         gbc.gridx = 0;
