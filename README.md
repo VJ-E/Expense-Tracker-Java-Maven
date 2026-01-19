@@ -6,6 +6,11 @@
 
 A desktop-based Expense Tracker application built with Java Swing and MySQL. This application helps users manage their expenses by category, track spending patterns, and maintain financial records in a user-friendly interface.
 
+
+## Preview
+
+![Expense Tracker Preview](preview-ET.gif)
+
 ## Features
 
 - Add, view, update, and delete expenses
@@ -45,7 +50,7 @@ A desktop-based Expense Tracker application built with Java Swing and MySQL. Thi
 
 4. **Run the application**
    ```bash
-   mvn exec:java -Dexec.mainClass="com.expenseTracker.Main"
+   mvn exec:java
    ```
 
 ## Project Structure
